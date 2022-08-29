@@ -5,23 +5,36 @@ import static java.lang.Math.abs;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
-    static String input = "";
+    static String input = "         ";
+
+    static int player = 0;
 
     public static void main(String[] args) {
         // write your code here
-        input = scanner.nextLine();
         PrintSchema();
-        if (Impossible()) {
-            System.out.println("Impossible");
-        } else if (XWin()) {
-            System.out.println("X wins");
-        } else if (OWin()) {
-            System.out.println("O wins");
-        } else if (GameNotFinished()) {
-            System.out.println("Game not finished");
-        } else {
-            System.out.println("Draw");
+
+        // Play
+        while (true) {
+            if (FirstMove()) {
+                PrintSchema();
+                if (XWin()) {
+                    System.out.println("X wins");
+                    break;
+                }
+                if (OWin()) {
+                    System.out.println("O wins");
+                    break;
+                }
+                if (player == 9) {
+                    System.out.println("Draw");
+                    break;
+                }
+            }
         }
+    }
+
+    public static void Formatted() {
+        input = input.replaceAll("_", " ");
     }
 
     public static void PrintSchema() {
@@ -40,7 +53,7 @@ public class Main {
      * @return true
      */
     public static boolean GameNotFinished() {
-        return input.contains("_");
+        return input.equals("_");
     }
 
     /**
@@ -89,7 +102,59 @@ public class Main {
         }
         return abs(Xs - Os) > 1 || (OWin() && XWin());
     }
+
+    public static boolean FirstMove() {
+        int x;
+        int y;
+        try {
+            x = scanner.nextInt();
+            y = scanner.nextInt();
+        } catch (Exception ex) {
+            System.out.println("You should enter numbers!");
+            return false;
+        }
+        if ((x >= 1 && x <= 3) && (y >= 1 && y <= 3)) {
+            if (x == 1) {
+                if (input.charAt(y - x) != ' ') {
+                    System.out.println("This cell is occupied! Choose another one!");
+                    return false;
+                } else {
+                    Update(1, x, y);
+                }
+            } else if (x == 2) {
+                if (input.charAt(x + y) != ' ') {
+                    System.out.println("This cell is occupied! Choose another one!");
+                    return false;
+                } else {
+                    Update(2, x, y);
+                }
+            } else {
+                if (input.charAt(x + y + 2) != ' ') {
+                    System.out.println("This cell is occupied! Choose another one!");
+                    return false;
+                } else {
+                    Update(3, x, y);
+                }
+            }
+        } else {
+            System.out.println("Coordinates should be from 1 to 3!");
+            return false;
+        }
+        return true;
+    }
+
+    public static void Update(int cases, int x, int y) {
+        StringBuilder str = new StringBuilder(input);
+        switch (cases) {
+            case 1 -> str.setCharAt((y - x), (player % 2 == 0) ? 'X' : 'O');
+            case 2 -> str.setCharAt((x + y), (player % 2 == 0) ? 'X' : 'O');
+            case 3 -> str.setCharAt((x + y + 2), (player % 2 == 0) ? 'X' : 'O');
+        }
+        input = String.valueOf(str);
+        ++player;
+    }
 }
+
 
 
 
